@@ -1,6 +1,10 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'models.freezed.dart';
+
 enum Direction { Up, Down, Idle }
 
-enum PassengerStatus { Waiting, InElevator, Arrived }
+enum PassengerStatus { Waiting, InElevator, Arrived, Disappeared }
 
 class Passenger {
   final String id;
@@ -109,34 +113,14 @@ class Floor {
   }
 }
 
-class GameState {
-  List<Elevator> elevators;
-  List<Floor> floors;
-  List<Passenger> allPassengers; // Maybe track all active ones
-  int score;
-  final bool isGameOver;
-  // Potentially game timer, difficulty level, etc.
-
-  GameState({
-    required this.elevators,
-    required this.floors,
-    this.allPassengers = const [],
-    this.score = 0,
-    this.isGameOver = false,
-  });
-  GameState copyWith({
-    List<Elevator>? elevators,
-    List<Floor>? floors,
-    List<Passenger>? allPassengers,
-    int? score,
-    bool? isGameOver,
-  }) {
-    return GameState(
-      elevators: elevators ?? this.elevators,
-      floors: floors ?? this.floors,
-      allPassengers: allPassengers ?? this.allPassengers,
-      score: score ?? this.score,
-      isGameOver: isGameOver ?? this.isGameOver,
-    );
-  }
+@freezed
+abstract class GameState with _$GameState {
+  const factory GameState({
+    required List<Elevator> elevators,
+    required List<Floor> floors,
+    required List<Passenger> allPassengers,
+    required int score,
+    required bool isGameOver,
+    required Duration elapsedGameTime,
+  }) = _GameState;
 }

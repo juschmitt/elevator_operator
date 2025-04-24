@@ -320,7 +320,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
       didMove = false;
     } else {
       print(
-        "[Warning] Elevator ${e.id} at ${e.currentFloor} with target ${targetFloor} but moveDirection is Idle. Recalculating direction.",
+        "[Warning] Elevator ${e.id} at ${e.currentFloor} with target $targetFloor but moveDirection is Idle. Recalculating direction.",
       );
       final direction =
           targetFloor > currentFloor
@@ -441,6 +441,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
       allPassengers: updatedAllPassengers,
       score: state.score + scoreGainedThisTick,
       isGameOver: gameOver, // Update game over status
+      elapsedGameTime: _elapsedGameTime, // Pass the updated game time
     );
   }
 

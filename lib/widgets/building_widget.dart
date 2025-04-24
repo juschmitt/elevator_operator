@@ -31,6 +31,13 @@ class _BuildingWidgetState extends ConsumerState<BuildingWidget> {
         .commandElevator(selectedElevator.id, floorNumber);
   }
 
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$minutes:$seconds";
+  }
+
   @override
   Widget build(BuildContext context) {
     final gameState = ref.watch(gameStateProvider);
@@ -38,6 +45,10 @@ class _BuildingWidgetState extends ConsumerState<BuildingWidget> {
     final elevators = gameState.elevators;
     final int floorCount = floors.length;
     final bool hasSelectedElevator = elevators.any((e) => e.isSelected);
+    final int score = gameState.score;
+    final String elapsedTimeFormatted = _formatDuration(
+      gameState.elapsedGameTime,
+    );
 
     // Total height of the floor area
     final double buildingContentHeight = floorCount * FLOOR_HEIGHT;
@@ -124,6 +135,44 @@ class _BuildingWidgetState extends ConsumerState<BuildingWidget> {
                     );
                   }),
                 ),
+              ),
+            ),
+          ),
+
+          // Score and Time Display
+          Positioned(
+            top: 10.0,
+            left: 10.0,
+            right: 10.0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 8.0,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Score: $score',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Time: $elapsedTimeFormatted',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

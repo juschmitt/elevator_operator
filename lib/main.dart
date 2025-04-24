@@ -21,13 +21,12 @@ void main() {
     score: 0,
     allPassengers: [],
     isGameOver: false,
+    elapsedGameTime: Duration.zero,
   );
 
   runApp(
     ProviderScope(
-      overrides: [
-        initialGameStateProvider.overrideWithValue(initialGameState),
-      ],
+      overrides: [initialGameStateProvider.overrideWithValue(initialGameState)],
       child: const MyApp(),
     ),
   );
