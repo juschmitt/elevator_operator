@@ -34,19 +34,30 @@ class GameStateNotifier extends StateNotifier<GameState> {
   GameStateNotifier(this._initialState) : super(_initialState);
 
   static const double _speed = 0.5;
-  static const Duration _passengerSpawnInterval = Duration(seconds: 5);
   Duration _timeSinceLastSpawn = Duration.zero;
   final _random = math.Random();
   static const int _maxTotalWaitingPassengers = 10; // Example limit
 
+  final Duration _initialSpawnInterval = const Duration(seconds: 5);
+  final Duration _minSpawnInterval = const Duration(seconds: 1);
+  final Duration _difficultyIncreaseInterval = const Duration(
+    seconds: 20,
+  ); // Every 20s
+  final Duration _spawnIntervalDecreaseAmount = const Duration(
+    milliseconds: 150,
+  ); // Decrease by 150ms
+  Duration _elapsedGameTime = Duration.zero;
+
   void startGame() {
     _timeSinceLastSpawn = Duration.zero;
+    _elapsedGameTime = Duration.zero; // Reset game time on start
   }
 
   void resetGame() {
     print("--- Restarting Game ---");
     state = _initialState;
     _timeSinceLastSpawn = Duration.zero; // Also reset spawn timer
+    _elapsedGameTime = Duration.zero; // Reset game time
     // The UI (ticker) will handle restarting the game loop timing
   }
 
@@ -512,13 +523,30 @@ class GameStateNotifier extends StateNotifier<GameState> {
     return score;
   }
 
+  Duration _getCurrentSpawnInterval() {
+    final decreases =
+        (_elapsedGameTime.inSeconds / _difficultyIncreaseInterval.inSeconds)
+            .floor();
+    final totalDecrease = _spawnIntervalDecreaseAmount * decreases;
+    final currentInterval = _initialSpawnInterval - totalDecrease;
+    // Clamp the interval to the minimum spawn time
+    if (currentInterval < _minSpawnInterval) {
+      return _minSpawnInterval;
+    }
+    return currentInterval;
+  }
+
   void tick(Duration elapsed) {
     if (state.isGameOver) return; // Stop ticking if game is over
 
+    _elapsedGameTime += elapsed; // Increment game time
+
+    final currentSpawnInterval = _getCurrentSpawnInterval();
+
     _timeSinceLastSpawn += elapsed;
-    if (_timeSinceLastSpawn >= _passengerSpawnInterval) {
+    if (_timeSinceLastSpawn >= currentSpawnInterval) {
       _spawnPassenger();
-      _timeSinceLastSpawn -= _passengerSpawnInterval;
+      _timeSinceLastSpawn -= currentSpawnInterval; // Use the current interval
     }
 
     _updateGameLogic(elapsed);
