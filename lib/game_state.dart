@@ -36,29 +36,26 @@ class GameStateNotifier extends StateNotifier<GameState> {
   static const double _speed = 0.5;
   Duration _timeSinceLastSpawn = Duration.zero;
   final _random = math.Random();
-  static const int _maxTotalWaitingPassengers = 10; // Example limit
+  static const int _maxTotalWaitingPassengers = 10;
 
   final Duration _initialSpawnInterval = const Duration(seconds: 5);
   final Duration _minSpawnInterval = const Duration(seconds: 1);
-  final Duration _difficultyIncreaseInterval = const Duration(
-    seconds: 20,
-  ); // Every 20s
+  final Duration _difficultyIncreaseInterval = const Duration(seconds: 20);
   final Duration _spawnIntervalDecreaseAmount = const Duration(
     milliseconds: 150,
-  ); // Decrease by 150ms
+  );
   Duration _elapsedGameTime = Duration.zero;
 
   void startGame() {
     _timeSinceLastSpawn = Duration.zero;
-    _elapsedGameTime = Duration.zero; // Reset game time on start
+    _elapsedGameTime = Duration.zero;
   }
 
   void resetGame() {
     print("--- Restarting Game ---");
     state = _initialState;
-    _timeSinceLastSpawn = Duration.zero; // Also reset spawn timer
-    _elapsedGameTime = Duration.zero; // Reset game time
-    // The UI (ticker) will handle restarting the game loop timing
+    _timeSinceLastSpawn = Duration.zero;
+    _elapsedGameTime = Duration.zero;
   }
 
   void _spawnPassenger() {
@@ -94,25 +91,25 @@ class GameStateNotifier extends StateNotifier<GameState> {
           state.floors.map((floor) {
             if (floor.floorNumber == passenger.spawnFloor) {
               final waitingList =
-                  passenger.direction == Direction.Up
+                  passenger.direction == Direction.up
                       ? [...floor.waitingUp, passenger]
                       : [...floor.waitingDown, passenger];
 
               return floor.copyWith(
                 waitingUp:
-                    passenger.direction == Direction.Up
+                    passenger.direction == Direction.up
                         ? waitingList
                         : floor.waitingUp,
                 waitingDown:
-                    passenger.direction == Direction.Down
+                    passenger.direction == Direction.down
                         ? waitingList
                         : floor.waitingDown,
                 callUpLit:
-                    passenger.direction == Direction.Up
+                    passenger.direction == Direction.up
                         ? true
                         : floor.callUpLit,
                 callDownLit:
-                    passenger.direction == Direction.Down
+                    passenger.direction == Direction.down
                         ? true
                         : floor.callDownLit,
               );
@@ -132,9 +129,9 @@ class GameStateNotifier extends StateNotifier<GameState> {
               final currentFloor = e.currentFloor;
               final direction =
                   targetFloor > currentFloor
-                      ? Direction.Up
+                      ? Direction.up
                       : (targetFloor < currentFloor
-                          ? Direction.Down
+                          ? Direction.down
                           : e.direction);
 
               List<int> newQueue = List.of(e.destinationQueue);
@@ -146,7 +143,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
                 "Elevator ${e.id} current floor: $currentFloor, target: $targetFloor, new queue: $newQueue, direction: $direction",
               );
               return e.copyWith(
-                direction: newQueue.isEmpty ? Direction.Idle : direction,
+                direction: newQueue.isEmpty ? Direction.idle : direction,
                 destinationQueue: newQueue,
                 isSelected: false,
               );
@@ -158,7 +155,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
 
   _ElevatorTickResult _processSingleElevatorTick(Elevator e, Duration elapsed) {
     if (e.destinationQueue.isEmpty) {
-      if (e.direction != Direction.Idle) {
+      if (e.direction != Direction.idle) {
         final arrivalFloor = e.currentFloor.round();
         if (e.currentFloor == arrivalFloor.toDouble()) {
           print(
@@ -180,7 +177,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
           return _ElevatorTickResult(
             e.copyWith(
               passengers: currentPassengersInElevator,
-              direction: Direction.Idle,
+              direction: Direction.idle,
             ),
             passengersGettingOff,
             passengersGettingOn,
@@ -190,7 +187,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
         }
       }
       return _ElevatorTickResult(
-        e.copyWith(direction: Direction.Idle),
+        e.copyWith(direction: Direction.idle),
         [],
         [],
         false,
@@ -201,8 +198,8 @@ class GameStateNotifier extends StateNotifier<GameState> {
     final currentFloor = e.currentFloor;
     final moveDirection =
         targetFloor > currentFloor
-            ? Direction.Up
-            : (targetFloor < currentFloor ? Direction.Down : Direction.Idle);
+            ? Direction.up
+            : (targetFloor < currentFloor ? Direction.down : Direction.idle);
 
     bool didMove = false;
     Elevator updatedElevator = e.copyWith(direction: moveDirection);
@@ -214,7 +211,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
         elapsed.inMicroseconds / Duration.microsecondsPerSecond;
     final double moveDistance = _speed * elapsedSeconds;
 
-    if (moveDirection == Direction.Up && currentFloor < targetFloor) {
+    if (moveDirection == Direction.up && currentFloor < targetFloor) {
       final newFloor = currentFloor + moveDistance;
 
       if (newFloor >= targetFloor) {
@@ -236,10 +233,10 @@ class GameStateNotifier extends StateNotifier<GameState> {
         final remainingQueue = e.destinationQueue.sublist(1);
         final nextDirection =
             remainingQueue.isEmpty
-                ? Direction.Idle
+                ? Direction.idle
                 : (remainingQueue.first > targetFloor
-                    ? Direction.Up
-                    : Direction.Down);
+                    ? Direction.up
+                    : Direction.down);
 
         updatedElevator = e.copyWith(
           currentFloor: targetFloor.toDouble(),
@@ -252,7 +249,7 @@ class GameStateNotifier extends StateNotifier<GameState> {
         updatedElevator = e.copyWith(currentFloor: newFloor);
         didMove = true;
       }
-    } else if (moveDirection == Direction.Down && currentFloor > targetFloor) {
+    } else if (moveDirection == Direction.down && currentFloor > targetFloor) {
       final newFloor = currentFloor - moveDistance;
 
       if (newFloor <= targetFloor) {
@@ -274,10 +271,10 @@ class GameStateNotifier extends StateNotifier<GameState> {
         final remainingQueue = e.destinationQueue.sublist(1);
         final nextDirection =
             remainingQueue.isEmpty
-                ? Direction.Idle
+                ? Direction.idle
                 : (remainingQueue.first > targetFloor
-                    ? Direction.Up
-                    : Direction.Down);
+                    ? Direction.up
+                    : Direction.down);
 
         updatedElevator = e.copyWith(
           currentFloor: targetFloor.toDouble(),
@@ -307,10 +304,10 @@ class GameStateNotifier extends StateNotifier<GameState> {
       final remainingQueue = e.destinationQueue.sublist(1);
       final nextDirection =
           remainingQueue.isEmpty
-              ? Direction.Idle
+              ? Direction.idle
               : (remainingQueue.first > targetFloor
-                  ? Direction.Up
-                  : Direction.Down);
+                  ? Direction.up
+                  : Direction.down);
 
       updatedElevator = e.copyWith(
         destinationQueue: remainingQueue,
@@ -324,8 +321,8 @@ class GameStateNotifier extends StateNotifier<GameState> {
       );
       final direction =
           targetFloor > currentFloor
-              ? Direction.Up
-              : (targetFloor < currentFloor ? Direction.Down : Direction.Idle);
+              ? Direction.up
+              : (targetFloor < currentFloor ? Direction.down : Direction.idle);
       updatedElevator = updatedElevator.copyWith(direction: direction);
       didMove = false;
     }
@@ -374,9 +371,9 @@ class GameStateNotifier extends StateNotifier<GameState> {
         allPassengersGettingOnByFloor.values.expand((list) => list).toSet();
     return currentAllPassengers.map((p) {
       if (passengersGettingOff.contains(p)) {
-        return p.copyWith(status: PassengerStatus.Arrived);
+        return p.copyWith(status: PassengerStatus.arrived);
       } else if (allGettingOn.contains(p)) {
-        return p.copyWith(status: PassengerStatus.InElevator);
+        return p.copyWith(status: PassengerStatus.inElevator);
       }
       return p;
     }).toList();
@@ -481,13 +478,13 @@ class GameStateNotifier extends StateNotifier<GameState> {
             .where((p) {
               if (availableSpace <= 0) return false;
 
-              if (elevator.direction == Direction.Idle) return true;
+              if (elevator.direction == Direction.idle) return true;
 
-              if (elevator.direction == Direction.Up &&
+              if (elevator.direction == Direction.up &&
                   p.destinationFloor > floor) {
                 return true;
               }
-              if (elevator.direction == Direction.Down &&
+              if (elevator.direction == Direction.down &&
                   p.destinationFloor < floor) {
                 return true;
               }

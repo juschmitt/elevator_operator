@@ -12,7 +12,7 @@ void main() {
         id: 'E1',
         capacity: 8,
         currentFloor: 0.0,
-        direction: Direction.Up,
+        direction: Direction.up,
         destinationQueue: [],
         passengers: [],
         isSelected: false,

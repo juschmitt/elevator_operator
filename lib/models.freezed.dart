@@ -81,7 +81,7 @@ as DateTime,
 
 
 class _Passenger extends Passenger {
-  const _Passenger({required this.id, required this.spawnFloor, required this.destinationFloor, this.status = PassengerStatus.Waiting, required this.spawnTime}): super._();
+  const _Passenger({required this.id, required this.spawnFloor, required this.destinationFloor, this.status = PassengerStatus.waiting, required this.spawnTime}): super._();
   
 
 @override final  String id;

@@ -2,9 +2,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'models.freezed.dart';
 
-enum Direction { Up, Down, Idle }
+enum Direction { up, down, idle }
 
-enum PassengerStatus { Waiting, InElevator, Arrived, Disappeared }
+enum PassengerStatus { waiting, inElevator, arrived, disappeared }
 
 @freezed
 abstract class Passenger with _$Passenger {
@@ -12,14 +12,14 @@ abstract class Passenger with _$Passenger {
     required String id,
     required int spawnFloor,
     required int destinationFloor,
-    @Default(PassengerStatus.Waiting) PassengerStatus status,
+    @Default(PassengerStatus.waiting) PassengerStatus status,
     required DateTime spawnTime,
   }) = _Passenger;
 
   const Passenger._();
 
   Direction get direction =>
-      destinationFloor > spawnFloor ? Direction.Up : Direction.Down;
+      destinationFloor > spawnFloor ? Direction.up : Direction.down;
 }
 
 @freezed
